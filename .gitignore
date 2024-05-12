@@ -54,5 +54,8 @@ dkms.conf
 
 .git
 
+logs/
+*.DotSettings.user
+global.json
 */obj/
 */bin/
