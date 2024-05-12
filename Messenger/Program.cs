@@ -1,17 +1,20 @@
-using System.Net.Sockets;
-using Messenger.Models;
-using Messenger.Services;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Storage;
+using Autofac;
+using Autofac.Extensions.DependencyInjection;
+using Messenger;
 
 public static class Program
 {
     public static readonly string SomeUniqueNameForLocalRun = $"AbraCadabra{new Random().Next()}";
     public static void Main(string[] args)
     {
-        /*
         var builder = WebApplication.CreateBuilder(args);
+
+        builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory())
+            .ConfigureContainer<ContainerBuilder>(containerBuilder =>
+                {
+                    containerBuilder.RegisterModule(new DIContainer());
+                });
+        
 
 // Add services to the container.
 
@@ -21,6 +24,9 @@ public static class Program
         builder.Services.AddSwaggerGen();
 
         var app = builder.Build();
+
+        var exceptionMiddleware = app.Services.GetService<ExceptionMiddleware>();
+        app.Use(exceptionMiddleware.Handle);
 
 // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
@@ -35,8 +41,7 @@ public static class Program
 
         app.MapControllers();
 
-        */
-        using (var context1 = new UserContext())
+        /*using (var context1 = new UserContext())
         {
             var creator = (RelationalDatabaseCreator) context1.Database.GetService<IRelationalDatabaseCreator>();
             creator.CreateTables();
@@ -47,7 +52,7 @@ public static class Program
         
         using var context = new UserContext();
         context.Users.Add(new User { Id = new Random().NextInt64().ToString(), Nickname = "dsadsa" });
-        context.SaveChanges();
-        //app.Run();
+        context.SaveChanges();*/
+        app.Run();
     }
 }
