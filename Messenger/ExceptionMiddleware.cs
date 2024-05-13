@@ -31,7 +31,7 @@ internal class ExceptionMiddleware
                 message = apiException.Message;
             }
 
-            LogException(statusCode, message);
+            LogException(statusCode, e);
 
             response.StatusCode = (int)statusCode;
             response.ContentType = "application/json";
@@ -46,7 +46,7 @@ internal class ExceptionMiddleware
         }
     }
 
-    private void LogException(HttpStatusCode statusCode, string message)
+    private void LogException(HttpStatusCode statusCode, Exception message)
     {
         //TODO eventId добавить надо
         switch (statusCode) 
@@ -55,10 +55,10 @@ internal class ExceptionMiddleware
             case HttpStatusCode.Forbidden:
             case HttpStatusCode.Unauthorized:
             case HttpStatusCode.BadRequest:
-                logger.Warning(message);
+                logger.Warning(message, "some template");
                 break;
             default:
-                logger.Error(message);
+                logger.Error(message, "some template");
                 break;
         }
     }
