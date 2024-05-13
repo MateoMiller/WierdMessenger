@@ -6,17 +6,45 @@ namespace Messenger.Authorization;
 [Route("auth")]
 public class AuthorizationController : ControllerBase
 {
-    [HttpGet("signIn")]
-    public async Task SignIn(string login, string password)
+    private readonly IAuthorizationService authorizationService;
+
+    public AuthorizationController(IAuthorizationService authorizationService)
     {
-        throw new ApiException("LOL", HttpStatusCode.BadRequest);
+        this.authorizationService = authorizationService;
     }
-    
-    
+
+    [HttpGet("register")]
+    public async Task Register(string login, string password)
+    {
+        if (login == null || password == null)
+            throw new ApiException("LOL", HttpStatusCode.BadRequest);
+        await authorizationService.Register(login, password).ConfigureAwait(false);
+    }
+
+    [HttpGet("signIn")]
+    public async Task<Guid> SignIn(string login, string password)
+    {
+        if (login == null || password == null)
+            throw new ApiException("LOL", HttpStatusCode.BadRequest);
+        var sessionState = await authorizationService.SignIn(login, password).ConfigureAwait(false);
+        Response.Cookies.Append("auth.sid", sessionState.AuthSid.ToString("N"), new CookieOptions()
+        {
+            Expires = sessionState.ExpiresAt
+        });
+        return sessionState.UserId;
+    }
+
     [HttpGet("logout")]
     public async Task Logout()
     {
-        
-        throw new NullReferenceException("Your account does not exist");
+        await authorizationService.Logout().ConfigureAwait(false);
+        Response.Cookies.Delete("auth.sid");
+    }
+    
+    [HttpGet("getState")]
+    public async Task<Guid> GetState()
+    {
+        var state = await authorizationService.GetState().ConfigureAwait(false);
+        return state.UserId;
     }
 }
