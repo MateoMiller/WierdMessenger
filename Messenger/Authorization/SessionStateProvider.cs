@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using ILogger = Serilog.ILogger;
 
 namespace Messenger.Authorization;
 
@@ -18,7 +17,7 @@ public class SessionStateProvider
     public async Task<SessionState> GetAsync()
     {
         var sessionId = sidProvider.Get();
-        await using var context = new AuthContext();
+        await using var context = new AuthContext(logger);
         var kek = await context.CookiesModels.FirstAsync(x => x.AuthSid == sessionId);
 
         logger.Debug($"found {sessionId} {kek.UserId}");

@@ -14,11 +14,11 @@ public class AuthorizationController : ControllerBase
     }
 
     [HttpGet("register")]
-    public async Task Register(string login, string password)
+    public async Task Register(string login, string password, string username)
     {
-        if (login == null || password == null)
+        if (login == null || password == null || username == null)
             throw new ApiException("LOL", HttpStatusCode.BadRequest);
-        await authorizationService.Register(login, password).ConfigureAwait(false);
+        await authorizationService.Register(login, password, username).ConfigureAwait(false);
     }
 
     [HttpGet("signIn")]
