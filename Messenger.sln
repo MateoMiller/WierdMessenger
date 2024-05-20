@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Messenger", "Messenger\Messenger.csproj", "{100A5759-1BDD-4C52-9A20-D402E29387B0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FunctionalTests", "FunctionalTests\FunctionalTests.csproj", "{9B627C04-8BDC-499D-83C9-E101B856DDAE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +14,9 @@ Global
 		{100A5759-1BDD-4C52-9A20-D402E29387B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{100A5759-1BDD-4C52-9A20-D402E29387B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{100A5759-1BDD-4C52-9A20-D402E29387B0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9B627C04-8BDC-499D-83C9-E101B856DDAE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9B627C04-8BDC-499D-83C9-E101B856DDAE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9B627C04-8BDC-499D-83C9-E101B856DDAE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9B627C04-8BDC-499D-83C9-E101B856DDAE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
