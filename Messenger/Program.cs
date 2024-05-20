@@ -1,24 +1,24 @@
 using Autofac;
 using Autofac.Extensions.DependencyInjection;
-using Messenger;
+namespace Messenger;
 
 public static class Program
 {
-    public static readonly string SomeUniqueNameForLocalRun = $"AbraCadabra{new Random().Next()}";
+    public const string PgConnectionString = @"Host=localhost;Database=MyTest1;Username=postgres;Password=123";
+
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
 
         builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory())
             .ConfigureContainer<ContainerBuilder>(containerBuilder =>
-                {
-                    containerBuilder.RegisterModule(new DIContainer());
-                });
-        
-
+            {
+                containerBuilder.RegisterModule(new DIContainer());
+            });
 // Add services to the container.
 
         builder.Services.AddControllers();
+        builder.Services.AddHttpContextAccessor();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
@@ -36,23 +36,19 @@ public static class Program
         }
 
         app.UseHttpsRedirection();
+        
+        //Если разберусь с CORS на фронте, то можно ужесточить cors на бэке
+        app.UseCors(x => x
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowCredentials()
+            //.WithOrigins("https://localhost:44351")); // Allow only this origin can also have multiple origins seperated with comma
+            .SetIsOriginAllowed(origin => true));
 
         app.UseAuthorization();
 
         app.MapControllers();
 
-        /*using (var context1 = new UserContext())
-        {
-            var creator = (RelationalDatabaseCreator) context1.Database.GetService<IRelationalDatabaseCreator>();
-            creator.CreateTables();
-            context1.Database.EnsureCreated();
-        }
-
-        Console.WriteLine("Я дошёл дальше");
-        
-        using var context = new UserContext();
-        context.Users.Add(new User { Id = new Random().NextInt64().ToString(), Nickname = "dsadsa" });
-        context.SaveChanges();*/
         app.Run();
     }
 }
