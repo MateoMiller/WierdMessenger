@@ -1,10 +1,12 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Messenger.DatabaseConnection;
+using Microsoft.EntityFrameworkCore;
 
 namespace Messenger.Authorization;
 
-public class AuthContext : DbContext
+public class AuthContext : PgDbContext
 {
     public DbSet<AuthModel> AuthModels { get; set; }
+    public DbSet<UserModel> UserModels { get; set; }
     public DbSet<CookiesModel> CookiesModels { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -47,9 +49,23 @@ public class AuthContext : DbContext
                 .IsRequired();
         });
         
+        modelBuilder.Entity<UserModel>(entity =>
+        {
+            entity.ToTable("users");
+
+            entity.HasKey(e => e.UserId);
+
+            entity.Property(e => e.Username)
+                .IsRequired();
+
+            entity.Property(e => e.ImageBase64)
+                .IsRequired();
+        });
+        
         base.OnModelCreating(modelBuilder);
     }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder options)
-        => options.UseNpgsql(@"Host=localhost;Database=MyTest1;Username=postgres;Password=123");
+    public AuthContext(Serilog.ILogger logger) : base(logger)
+    {
+    }
 }

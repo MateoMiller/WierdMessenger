@@ -2,7 +2,7 @@
 
 public class Chat
 {
-    public Guid ChatId;
-    public Guid FirstUserId;
-    public Guid SecondUserId;
+    public Guid ChatId { get; set; }
+    public string Name { get; set; }
+    public string Base64Image { get; set; }
 }
