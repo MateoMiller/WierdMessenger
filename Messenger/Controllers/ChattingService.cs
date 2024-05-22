@@ -22,7 +22,19 @@ public class ChattingService : IChattingService
 
         var chats = await chatsContext
             .UserChats
+            .Where(x => x.UserId == sessionState.UserId)
             .Join(chatsContext.Chats, y => y.ChatId, inner => inner.ChatId, (chat, inner) => inner)
+            .Select(chat =>
+                new Chat()
+                    {
+                        ChatId = chat.ChatId,
+                        Name= chat.Name,
+                        Base64Image = chat.Base64Image,
+                        LastSendMessage = chatsContext.Messages
+                            .Where(m => m.ChatId == chat.ChatId)
+                            .OrderByDescending(m => m.SendDate)
+                            .FirstOrDefault()
+                    })
             .ToArrayAsync();
 
         await chatsContext.SaveChangesAsync().ConfigureAwait(false);
