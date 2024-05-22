@@ -20,33 +20,44 @@ public class ChatsController
         return await chattingService.GetAllChats().ConfigureAwait(false);
     }
 
-    [HttpGet("get-users")]
-    public async Task<UserModel[]> GetUsers(Guid[] usersIds)
+    //ПОЧЕМУ ГЕТ НЕ ПОДДЕРЖИВАЕТ BODY
+    [HttpPost("get-users")]
+    public async Task<UserModel[]> GetUsers([FromBody] GetUsersDto dto)
     {
-        return await chattingService.GetUsers(usersIds).ConfigureAwait(false);
+        return await chattingService.GetUsers(dto.UsersIds.Select(Guid.Parse).ToArray()).ConfigureAwait(false);
     }
     
     [HttpPost("create")]
-    public async Task<Chat> CreateChat(string chatName, string imageBase64)
+    public async Task<Chat> CreateChat([FromBody] CreateChatDto dto)
     {
-        return await chattingService.CreateChat(chatName, imageBase64).ConfigureAwait(false);
+        return await chattingService.CreateChat(dto.ChatName, dto.ImageBase64).ConfigureAwait(false);
     }
 
     [HttpPost("join")]
-    public async Task JoinChat(Guid chatId)
+    public async Task JoinChat([FromBody] JoinChatDto dto)
     {
-        await chattingService.JoinChat(chatId).ConfigureAwait(false);
+        await chattingService.JoinChat(dto.ChatId).ConfigureAwait(false);
     }
     
     [HttpPost("send-message")]
-    public async Task SendMessage(Guid chatId, string text)
+    public async Task SendMessage([FromBody] SendMessageDto dto)
     {
-        await chattingService.SendMessage(chatId, text).ConfigureAwait(false);
+        await chattingService.SendMessage(dto.ChatId, dto.Text).ConfigureAwait(false);
     }
     
-    [HttpGet("get-messages")]
-    public async Task<Message[]> GetMessages(Guid chatId)
+    [HttpPost("get-messages")]
+    public async Task<Message[]> GetMessages([FromBody] GetMessagesDto dto)
     {
-        return await chattingService.GetMessages(chatId).ConfigureAwait(false);
+        return await chattingService.GetMessages(dto.ChatId).ConfigureAwait(false);
     }
 }
+
+public record CreateChatDto(string ChatName, string ImageBase64);
+public class GetUsersDto
+{
+    public string[] UsersIds { get; set; }
+}
+
+public record JoinChatDto(Guid ChatId);
+public record SendMessageDto(Guid ChatId, string Text);
+public record GetMessagesDto(Guid ChatId);

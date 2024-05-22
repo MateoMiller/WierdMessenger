@@ -13,32 +13,38 @@ public class AuthorizationController : ControllerBase
         this.authorizationService = authorizationService;
     }
 
-    [HttpGet("register")]
-    public async Task Register(string login, string password, string username)
+    [HttpPost("register")]
+    public async Task Register([FromBody] RegisterUserDTO dto)
     {
-        if (login == null || password == null || username == null)
+        if (dto.Login == null || dto.Password == null || dto.Username == null)
             throw new ApiException("LOL", HttpStatusCode.BadRequest);
-        await authorizationService.Register(login, password, username).ConfigureAwait(false);
+        await authorizationService.Register(dto.Login, dto.Password, dto.Username, dto.ImageBase64).ConfigureAwait(false);
     }
 
-    [HttpGet("signIn")]
-    public async Task<Guid> SignIn(string login, string password)
+
+    [HttpPost("signIn")]
+    public async Task<Guid> SignIn([FromBody] SignInDTO dto)
     {
-        if (login == null || password == null)
+        if (dto.Login == null || dto.Password == null)
             throw new ApiException("LOL", HttpStatusCode.BadRequest);
-        var sessionState = await authorizationService.SignIn(login, password).ConfigureAwait(false);
+        var sessionState = await authorizationService.SignIn(dto.Login, dto.Password).ConfigureAwait(false);
         Response.Cookies.Append("auth.sid", sessionState.AuthSid.ToString("N"), new CookieOptions()
         {
-            Expires = sessionState.ExpiresAt
+            Expires = sessionState.ExpiresAt,
+        });
+        Response.Cookies.Append("userId", sessionState.UserId.ToString("N"), new CookieOptions()
+        {
+            Expires = sessionState.ExpiresAt,
         });
         return sessionState.UserId;
     }
 
-    [HttpGet("logout")]
+    [HttpPost("logout")]
     public async Task Logout()
     {
         await authorizationService.Logout().ConfigureAwait(false);
         Response.Cookies.Delete("auth.sid");
+        Response.Cookies.Delete("userId");
     }
     
     [HttpGet("getState")]
@@ -48,3 +54,19 @@ public class AuthorizationController : ControllerBase
         return state.UserId;
     }
 }
+
+
+public class RegisterUserDTO
+{
+    public string Login { get; set; }
+    public string Password { get; set; }
+    public string Username { get; set; }
+    public string ImageBase64 { get; set; }
+}
+
+public class SignInDTO
+{
+    public string Login { get; set; }
+    public string Password { get; set; }
+}
+
