@@ -35,16 +35,23 @@ public static class Program
             app.UseSwaggerUI();
         }
 
-        app.UseHttpsRedirection();
+        //app.UseHttpsRedirection();
         
         //Если разберусь с CORS на фронте, то можно ужесточить cors на бэке
-        app.UseCors(x => x
-            .AllowAnyMethod()
+        app.UseCors(options => options
             .AllowAnyHeader()
+            .AllowAnyMethod()
+            .SetIsOriginAllowed(origin => true) // разрешить все источники
             .AllowCredentials()
-            //.WithOrigins("https://localhost:44351")); // Allow only this origin can also have multiple origins seperated with comma
-            .SetIsOriginAllowed(origin => true));
+        );
 
+        app.UseCookiePolicy(new CookiePolicyOptions
+        {
+            Secure = CookieSecurePolicy.SameAsRequest, // устанавливает защиту кук на основе запросов
+            MinimumSameSitePolicy = SameSiteMode.None // разрешить установку кук от множества источников
+        });
+
+            
         app.UseAuthorization();
 
         app.MapControllers();
